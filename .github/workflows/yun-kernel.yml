@@ -100,7 +100,7 @@ jobs:
       if: env.METHOD_OK == 'A'
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
-        if [ "${{ env.METHOD_OK }}" == "A" ] ; then
+        if [ ${{ env.METHOD_OK }} == A ] && [ ${{ env.Enable_GCC64 }} == true ]  ; then
         mkdir -p gcc-64
         wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/heads/${{ env.GCC64 }}.tar.gz || \
         wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/tags/${{ env.GCC64 }}.tar.gz
@@ -108,7 +108,7 @@ jobs:
         echo "GCC_64=CROSS_COMPILE=\"$GITHUB_WORKSPACE/kernel_workspace/gcc-64/bin/aarch64-linux-android-\"" >> $GITHUB_ENV
         fi
 
-        if [ "${{ env.METHOD_OK }}" == "A" ] && [ "${{ env.Enable_GCC32 }}" == "true" ]; then
+        if [ ${{ env.METHOD_OK }} == A ] && [ ${{ env.Enable_GCC32 }} == true ]; then
         mkdir -p gcc-32
         wget -O gcc-arm.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/heads/${{ env.GCC32 }}.tar.gz || \
         wget -O gcc-arm.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/tags/${{ env.GCC32 }}.tar.gz
