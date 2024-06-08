@@ -64,6 +64,10 @@ jobs:
       run: |
        sudo rm /bin/python
        sudo ln -s /bin/python2.7 /bin/python
+
+    - name: 安装linux内核头文件
+      run: sudo apt-get install linux-headers-$(uname -r)
+
       
     - name: 下载Clang-aosp编译器
       if: env.USE_CUSTOM_CLANG == 'false'
