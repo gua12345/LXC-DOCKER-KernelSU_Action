@@ -69,12 +69,12 @@ jobs:
       
     - name: 下载Clang-aosp编译器
       run: |
-        cd $GITHUB_WORKSPACE/kernel_workspace
-        mkdir -p clang-aosp
-        CLANG_TAR_URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/tags/${{ env.CLANG_BRANCH }}/clang-${{ env.CLANG_VERSION }}.tar.gz"
-        CLANG_TAR_URL_FALLBACK="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/${{ env.CLANG_BRANCH }}/clang-${{ env.CLANG_VERSION }}.tar.gz"
-        wget $CLANG_TAR_URL || wget $CLANG_TAR_URL_FALLBACK
-        tar -C clang-aosp/ -zxvf clang-${{ env.CLANG_VERSION }}.tar.gz
+       cd $GITHUB_WORKSPACE/kernel_workspace
+       mkdir -p clang-aosp
+       CLANG_TAR_URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/tags/${{ env.CLANG_BRANCH }}/clang-${{ env.CLANG_VERSION }}.tar.gz"
+       CLANG_TAR_URL_FALLBACK="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/${{ env.CLANG_BRANCH }}/clang-${{ env.CLANG_VERSION }}.tar.gz"
+       wget -O clang-${{ env.CLANG_VERSION }}.tar.gz $CLANG_TAR_URL || wget -O clang-${{ env.CLANG_VERSION }}.tar.gz $CLANG_TAR_URL_FALLBACK
+       tar -C clang-aosp/ -zxvf clang-${{ env.CLANG_VERSION }}.tar.gz
 
 
     - name: 下载Custom-Clang编译器
@@ -95,25 +95,27 @@ jobs:
             unzip clang.zip -d clang-aosp/
         fi
 
+
     - name: 下载Gcc-aosp编译器
       if: env.METHOD_OK == 'A'
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace
-        if [ "${{ env.METHOD_OK }}" = "A" && "${{ env.Enable_GCC64 }}" = "true" ]; then
-            mkdir -p gcc-64
-            wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/heads/${{ env.GCC64 }}.tar.gz || \
-            wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/tags/${{ env.GCC64 }}.tar.gz
-            tar -C gcc-64/ -zxvf gcc-aarch64.tar.gz
-            echo "GCC_64=CROSS_COMPILE=$GITHUB_WORKSPACE/kernel_workspace/gcc-64/bin/aarch64-linux-android-" >> $GITHUB_ENV
+        if [ "${{ env.METHOD_OK }}" = "A" ] && [ "${{ env.Enable_GCC64 }}" = "true" ]; then
+        mkdir -p gcc-64
+        wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/heads/${{ env.GCC64 }}.tar.gz || \
+        wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/tags/${{ env.GCC64 }}.tar.gz
+        tar -C gcc-64/ -zxvf gcc-aarch64.tar.gz
+        echo "GCC_64=CROSS_COMPILE=\"$GITHUB_WORKSPACE/kernel_workspace/gcc-64/bin/aarch64-linux-android-\"" >> $GITHUB_ENV
         fi
 
-        if [ "${{ env.METHOD_OK }}" = "A" && "${{ env.Enable_GCC32 }}" = "true" ]; then
-            mkdir -p gcc-32
-            wget -O gcc-arm.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/heads/${{ env.GCC32 }}.tar.gz || \
-            wget -O gcc-arm.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/tags/${{ env.GCC32 }}.tar.gz
-            tar -C gcc-32/ -zxvf gcc-arm.tar.gz
-            echo "GCC_32=CROSS_COMPILE_ARM32=$GITHUB_WORKSPACE/kernel_workspace/gcc-32/bin/arm-linux-androideabi-" >> $GITHUB_ENV
+        if [ "${{ env.METHOD_OK }}" = "A" ] && [ "${{ env.Enable_GCC32 }}" = "true" ]; then
+        mkdir -p gcc-32
+        wget -O gcc-arm.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/heads/${{ env.GCC32 }}.tar.gz || \
+        wget -O gcc-arm.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/tags/${{ env.GCC32 }}.tar.gz
+        tar -C gcc-32/ -zxvf gcc-arm.tar.gz
+        echo "GCC_32=CROSS_COMPILE_ARM32=\"$GITHUB_WORKSPACE/kernel_workspace/gcc-32/bin/arm-linux-androideabi-\"" >> $GITHUB_ENV
         fi
+ 
 
     - name: 下载mkbootimg解包工具
       if: env.BUILD_BOOT_IMG == 'true'
