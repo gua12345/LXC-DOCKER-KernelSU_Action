@@ -72,7 +72,7 @@ jobs:
         cd $GITHUB_WORKSPACE/kernel_workspace
         mkdir -p clang-aosp
         CLANG_TAR_URL="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/tags/${{ env.CLANG_BRANCH }}/clang-${{ env.CLANG_VERSION }}.tar.gz"
-        CLANG_TAR_URL_FALLBACK="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+/refs/heads/${{ env.CLANG_BRANCH }}/clang-${{ env.CLANG_VERSION }}.tar.gz"
+        CLANG_TAR_URL_FALLBACK="https://android.googlesource.com/platform/prebuilts/clang/host/linux-x86/+archive/refs/heads/${{ env.CLANG_BRANCH }}/clang-${{ env.CLANG_VERSION }}.tar.gz"
         wget $CLANG_TAR_URL || wget $CLANG_TAR_URL_FALLBACK
         tar -C clang-aosp/ -zxvf clang-${{ env.CLANG_VERSION }}.tar.gz
 
