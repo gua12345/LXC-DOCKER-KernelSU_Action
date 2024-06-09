@@ -50,6 +50,10 @@ jobs:
         echo "NEED_DTBO=$(cat config.env | grep -w "NEED_DTBO" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
         echo "BUILD_BOOT_IMG=$(cat config.env | grep -w "BUILD_BOOT_IMG" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
         echo "SOURCE_BOOT_IMAGE=$(cat config.env | grep -w "SOURCE_BOOT_IMAGE" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+        echo "ENABLE_GCC64=$(cat config.env | grep -w "ENABLE_GCC64" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+        echo "ENABLE_GCC32=$(cat config.env | grep -w "ENABLE_GCC32" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+        echo "GCC64=$(cat config.env | grep -w "ENABLE_GCC64" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+        echo "GCC32=$(cat config.env | grep -w "ENABLE_GCC32" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
 
     - name: 构建编译内核环境
       run: |
@@ -64,9 +68,25 @@ jobs:
       run: |
        sudo rm /bin/python
        sudo ln -s /bin/python2.7 /bin/python
+    
+    - name: 下载Gcc_64编译器
+      if: env.ENABLE_GCC64 == 'true' 
+      run: |
+          mkdir -p ${{ github.workspace }}/kernel_workspace/gcc-64
+          wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/heads/${{ env.GCC64 }}.tar.gz || \
+          wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/tags/${{ env.GCC64 }}.tar.gz
+          tar -C ${{ github.workspace }}/kernel_workspace/gcc-64/ -zxvf gcc-aarch64.tar.gz
+          echo "GCC_64=CROSS_COMPILE=${{ github.workspace }}/kernel_workspace/gcc-64/bin/aarch64-linux-android-" >> $GITHUB_ENV
 
-
-      
+    - name: 下载Gcc_64编译器
+      if: env.ENABLE_GCC32 == 'true' 
+      run: |
+          mkdir -p ${{ github.workspace }}/kernel_workspace/gcc-32
+          wget -O gcc-arm.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/heads/${{ env.GCC32 }}.tar.gz || \
+          wget -O gcc-arm.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/tags/${{ env.GCC32 }}.tar.gz
+          tar -C ${{ github.workspace }}/kernel_workspace/gcc-32/ -zxvf gcc-arm.tar.gz
+          echo "GCC_32=CROSS_COMPILE_ARM32=${{ github.workspace }}/kernel_workspace/gcc-32/bin/arm-linux-androideabi-" >> $GITHUB_ENV 
+          
     - name: 下载Clang-aosp编译器
       run: |
        cd $GITHUB_WORKSPACE/kernel_workspace
@@ -94,26 +114,6 @@ jobs:
             mkdir clang-aosp
             unzip clang.zip -d clang-aosp/
         fi
-
-
-    - name: 下载Gcc_64编译器
-      if: env.ENABLE_GCC64 == 'true' 
-      run: |
-          mkdir -p ${{ github.workspace }}/kernel_workspace/gcc-64
-          wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/heads/${{ env.GCC64 }}.tar.gz || \
-          wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/tags/${{ env.GCC64 }}.tar.gz
-          tar -C ${{ github.workspace }}/kernel_workspace/gcc-64/ -zxvf gcc-aarch64.tar.gz
-          echo "GCC_64=CROSS_COMPILE=${{ github.workspace }}/kernel_workspace/gcc-64/bin/aarch64-linux-android-" >> $GITHUB_ENV
-
-    - name: 下载Gcc_64编译器
-      if: env.ENABLE_GCC32 == 'true' 
-      run: |
-          mkdir -p ${{ github.workspace }}/kernel_workspace/gcc-32
-          wget -O gcc-arm.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/heads/${{ env.GCC32 }}.tar.gz || \
-          wget -O gcc-arm.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/tags/${{ env.GCC32 }}.tar.gz
-          tar -C ${{ github.workspace }}/kernel_workspace/gcc-32/ -zxvf gcc-arm.tar.gz
-          echo "GCC_32=CROSS_COMPILE_ARM32=${{ github.workspace }}/kernel_workspace/gcc-32/bin/arm-linux-androideabi-" >> $GITHUB_ENV
-
 
 
     - name: 下载mkbootimg解包工具
