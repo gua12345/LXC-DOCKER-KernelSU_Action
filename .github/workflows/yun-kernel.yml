@@ -1,4 +1,4 @@
-name: z编译 ksu docker lxc 内核
+name: ksu docker lxc 内核编译
 on:
   watch:
     types: [started]
