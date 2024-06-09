@@ -88,6 +88,7 @@ jobs:
           echo "GCC_32=CROSS_COMPILE_ARM32=${{ github.workspace }}/kernel_workspace/gcc-32/bin/arm-linux-androideabi-" >> $GITHUB_ENV 
           
     - name: 下载Clang-aosp编译器
+      if: env.USE_CUSTOM_CLANG == 'false'
       run: |
        cd $GITHUB_WORKSPACE/kernel_workspace
        mkdir -p clang-aosp
