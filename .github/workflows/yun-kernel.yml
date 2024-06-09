@@ -52,8 +52,8 @@ jobs:
         echo "SOURCE_BOOT_IMAGE=$(cat config.env | grep -w "SOURCE_BOOT_IMAGE" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
         echo "ENABLE_GCC64=$(cat config.env | grep -w "ENABLE_GCC64" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
         echo "ENABLE_GCC32=$(cat config.env | grep -w "ENABLE_GCC32" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
-        echo "GCC64=$(cat config.env | grep -w "ENABLE_GCC64" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
-        echo "GCC32=$(cat config.env | grep -w "ENABLE_GCC32" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+        echo "GCC64=$(cat config.env | grep -w "GCC64" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+        echo "GCC32=$(cat config.env | grep -w "GCC32" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
 
     - name: 构建编译内核环境
       run: |
@@ -78,7 +78,7 @@ jobs:
           tar -C ${{ github.workspace }}/kernel_workspace/gcc-64/ -zxvf gcc-aarch64.tar.gz
           echo "GCC_64=CROSS_COMPILE=${{ github.workspace }}/kernel_workspace/gcc-64/bin/aarch64-linux-android-" >> $GITHUB_ENV
 
-    - name: 下载Gcc_64编译器
+    - name: 下载Gcc_32编译器
       if: env.ENABLE_GCC32 == 'true' 
       run: |
           mkdir -p ${{ github.workspace }}/kernel_workspace/gcc-32
