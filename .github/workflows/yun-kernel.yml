@@ -97,7 +97,7 @@ jobs:
 
 
     - name: 下载Gcc_64编译器
-      if: env.Enable_GCC64 == 'true' 
+      if: env.ENABLE_GCC64 == 'true' 
       run: |
           mkdir -p ${{ github.workspace }}/kernel_workspace/gcc-64
           wget -O gcc-aarch64.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/aarch64/aarch64-linux-android-4.9/+archive/refs/heads/${{ env.GCC64 }}.tar.gz || \
@@ -106,7 +106,7 @@ jobs:
           echo "GCC_64=CROSS_COMPILE=${{ github.workspace }}/kernel_workspace/gcc-64/bin/aarch64-linux-android-" >> $GITHUB_ENV
 
     - name: 下载Gcc_64编译器
-      if: env.Enable_GCC32 == 'true' 
+      if: env.ENABLE_GCC32 == 'true' 
       run: |
           mkdir -p ${{ github.workspace }}/kernel_workspace/gcc-32
           wget -O gcc-arm.tar.gz https://android.googlesource.com/platform/prebuilts/gcc/linux-x86/arm/arm-linux-androideabi-4.9/+archive/refs/heads/${{ env.GCC32 }}.tar.gz || \
