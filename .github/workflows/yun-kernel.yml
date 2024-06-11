@@ -54,6 +54,7 @@ jobs:
         echo "ENABLE_GCC32=$(cat config.env | grep -w "ENABLE_GCC32" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
         echo "GCC64=$(cat config.env | grep -w "GCC64" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
         echo "GCC32=$(cat config.env | grep -w "GCC32" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
+        echo "ENABLE_NETHUNTER=$(cat config.env | grep -w "ENABLE_NETHUNTER" | head -n 1 | cut -d "=" -f 2)" >> $GITHUB_ENV
 
     - name: 构建编译内核环境
       run: |
@@ -212,6 +213,23 @@ jobs:
         if [ ${{ env.DISABLE_CC_WERROR }} = true ]; then
             echo "CONFIG_CC_WERROR=n" >> arch/${{ env.ARCH }}/configs/${{ env.KERNEL_CONFIG }}
         fi
+        
+    - name: Setup Kali-Nethunter  
+      if: env.ENABLE_NETHUNTER == 'true'
+      run: |
+        cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
+        git clone https://github.com/tomxi1997/kali-nethunter_patches.git
+        patch -p1 < kali-nethunter_patches/add-rtl88xxau-5.6.4.2-drivers.patch
+        patch -p1 < kali-nethunter_patches/add-wifi-injection-4.14.patch
+        #patch -p1 < kali-nethunter_patches/add-wifi-injection.patch
+        patch -p1 < kali-nethunter_patches/fix-ath9k-naming-conflict.patch
+        sleep 8
+        git clone https://github.com/Biohazardousrom/Kali-defconfig-checker.git kali
+        cd kali
+        chmod +x *.sh
+        chmod +x check-kernel-config
+        ./check-kernel-config $GITHUB_WORKSPACE/kernel_workspace/android-kernel/arch/${{ env.ARCH }}/configs/${{ env.KERNEL_CONFIG }} -w
+        echo "kali-nethunter配置完成"
 
     - name: 设置ccache缓存
       if: env.ENABLE_CCACHE == 'true'
